@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+</head>
+
+<body>
+    <div id="header" style="font-size: xx-large; color: black; font-family: sans-serif"><img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg"> Checkout Button Options</div>
+    <hr>
+    <label>Color: </label><select name="color" id="color">
+        <option value="gold">Gold</option>
+        <option value="blue">Blue</option>
+        <option value="silver">Silver</option>
+        <option value="black">Black</option>
+    </select>
+    <label> Size: </label><select name="size" id="size">
+        <option value="small">Small</option>
+        <option value="medium">Medium</option>
+        <option value="large">Large</option>
+        <option value="responsive">Responsive</option>
+    </select>
+    <label> Shape: </label><select name="shape" id="shape">
+        <option value="pill">Pill</option>
+        <option value="rect">Rectangle</option>
+    </select>
+    <label> Label: </label><select name="label" id="label">
+        <option value="checkout">Checkout</option>
+        <option value="credit">Credit</option>
+        <option value="pay">Pay</option>
+        <option value="buynow">Buy Now</option>
+        <option value="paypal">PayPal</option>
+    </select>
+    <label> Tagline: </label><select name="tagline" id="tagline">
+        <option value="false">False</option>
+        <option value="true">True</option>
+    </select>
+    <br>
+    <label>Layout: </label><select name="layout" id="layout">
+        <option value="horizontal">Horizontal</option>
+        <option value="vertical">Vertical</option>
+    </select>
+    <label> Max Buttons: </label><select name="maxbuttons" id="maxbuttons">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+    </select>
+    <label> Show Credit Card Icons: </label>
+    <input type="checkbox" name="fundingicons" id="fundingicons">
+    <br><label>Funding options: </label>
+    <input type="checkbox" name="credit_allowed" id="credit_allowed" checked>PayPal Credit
+    <input type="checkbox" name="cc_allowed" id="cc_allowed" checked>Credit Cards
+    <input type="checkbox" name="elv_allowed" id="elv_allowed" checked>ELV
+    
+  <script>
+    // If Credit is selected, change available Color options
+    function labelChanged() {
+        var label = document.getElementById("label").value,
+            colorDropdown = document.getElementById("color");
+        if (label == "credit") {
+            colorDropdown.innerHTML = '<option value="black">Black</option><option value="darkblue">Dark Blue</option>';
+        } else {
+            colorDropdown.innerHTML = '<option value="gold">Gold</option><option value="blue">Blue</option><option value="silver">Silver</option><option value="black">Black</option>';
+        }
+    }
+    document.getElementById("label").addEventListener("change", labelChanged);
+      
+    // Layout: Vertical has a number of limitations
+    function layoutChanged() {
+        var layout = document.getElementById("layout").value,
+            size = document.getElementById("size").value,
+            sizeBox = document.getElementById("size"),
+            taglineBox = document.getElementById("tagline"),
+            labelBox = document.getElementById("label"),
+            funding = document.getElementById("fundingicons");
+        if (layout == "vertical") {
+            labelBox.disabled = true;
+            taglineBox.disabled = true;
+            funding.checked = false;
+            funding.disabled = true;
+            if (size == "small")
+                size = "medium";
+            sizeBox.innerHTML = '<option value="medium">Medium</option><option value="large">Large</option><option value="responsive">Responsive</option>';
+            sizeBox.value = size;
+        } else {
+            labelBox.disabled = false;
+            taglineBox.disabled = false;
+            funding.disabled = false;
+            sizeBox.innerHTML = '<option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option><option value="responsive">Responsive</option>';
+            sizeBox.value = size;
+        }
+    }
+    document.getElementById("layout").addEventListener("change", layoutChanged);
+      
+    function renderButton() {
+        document.getElementById("paypal-button").innerHTML="";
+      var color = document.getElementById("color").value,
+          size = document.getElementById("size").value,
+          shape = document.getElementById("shape").value,
+          label = document.getElementById("label").value,
+          tagline = document.getElementById("tagline").value,
+          layout = document.getElementById("layout").value,
+          maxbuttons = document.getElementById("maxbuttons").value,
+          credit_allowed = document.getElementById("credit_allowed").checked,
+          cc_allowed = document.getElementById("cc_allowed").checked,
+          elv_allowed = document.getElementById("elv_allowed").checked,
+          fundingicons = document.getElementById("fundingicons").checked,
+          allowed_methods = [],
+          disallowed_methods = [],
+          CLIENT_ID_SANDBOX = ""; // enter client ID here.
+      
+      if (credit_allowed) {
+          allowed_methods.push(paypal.FUNDING.CREDIT);
+      } else {
+          disallowed_methods.push(paypal.FUNDING.CREDIT);
+      }
+        
+      if (cc_allowed) {
+          allowed_methods.push(paypal.FUNDING.CARD);
+      } else {
+          disallowed_methods.push(paypal.FUNDING.CARD);
+      }
+        
+      if (elv_allowed) {
+          allowed_methods.push(paypal.FUNDING.ELV);
+      } else {
+          disallowed_methods.push(paypal.FUNDING.ELV);
+      }
+      
+      if (label == "credit") {
+          if (color != "black" && color != "darkblue") {
+              alert("Black or Dark Blue are only valid PayPal Credit colors");
+              return;
+          } else
+              fundingicons = false;
+      }
+      if (color == "darkblue" && label != "credit") {
+          alert("Dark Blue is only valid for label: credit");
+          return;
+      }
+      // Label, tagline, and fundingicons only allowed on horizontal layout
+      if (layout == "vertical") {
+          label = false;
+          tagline = false;
+          fundingicons = false;
+          
+          
+          // Medium is smallest size for vertical layout
+          if (size == "small")
+              size = "medium";
+      }
+        
+      paypal.Button.render({
+          env: 'sandbox', 
+          client: {
+              sandbox: CLIENT_ID_SANDBOX
+          },
+
+          commit: true, // Show a 'Pay Now' button
+
+          style: {
+            color: color,
+            size: size,
+            shape: shape,
+            tagline: tagline,
+            layout: layout,
+            label: label,
+            maxbuttons: Number(maxbuttons),
+            fundingicons: fundingicons
+          },
+          
+          funding: {
+              allowed: allowed_methods,
+              disallowed: disallowed_methods
+              
+          },
+
+          payment: function(data, actions) {
+            return actions.payment.create({
+                payment: {
+                    transactions: [
+                        {
+                            amount: {
+                                total: '9.99',
+                                currency: 'USD'
+                            }
+                        }
+                    ]
+                }
+            });
+          },
+
+          onAuthorize: function(data, actions) {
+            return actions.payment.execute().then(function(payment) {
+                alert("Payment complete!");
+
+                });
+          },
+
+          onCancel: function(data, actions) {
+            /* 
+             * Buyer cancelled the payment 
+             */
+          },
+
+          onError: function(err) {
+            /* 
+             * An error occurred during the transaction 
+             */
+          }
+        }, '#paypal-button');
+    }
+  </script>
+    <br>
+<button type="button" onclick="renderButton()">Generate</button>
+    <br>
+    <br />
+    <div id="paypal-button"></div>
+    <br>
+    <h2>Limitations of PayPal Checkout</h2>
+    <p>Certain parameters do not work with others:</p>
+    <ul>
+        <li>Color: <b>Dark Blue</b> is only available for <b>Label: Credit</b></li>
+        <li>When using <b>Label: Credit</b>, only <b>Color: Dark Blue</b> or <b>Black</b> will work.</li>
+        <li>When using <b>Layout: Vertical</b>, cannot use <b>Size: Small</b> and does not use options of <b>Tagline</b> or <b>Label</b></li>
+        <li><b>Funding Icons</b> only work with <b>Layout: Horizontal</b></li>
+        <li>Selecting <b>Funding Icons</b> will override the <b>Tagline</b></li>
+        <li>Venmo button will not appear unless on mobile with a device that has a Venmo cookie.</li>
+    </ul>
+</body>
