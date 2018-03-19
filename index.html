@@ -53,6 +53,7 @@
     <input type="checkbox" name="credit_allowed" id="credit_allowed" checked>PayPal Credit
     <input type="checkbox" name="cc_allowed" id="cc_allowed" checked>Credit Cards
     <input type="checkbox" name="elv_allowed" id="elv_allowed" checked>ELV
+    <input type="checkbox" name="venmo_allowed" id="venmo_allowed" checked>Venmo
     
   <script>
     // If Credit is selected, change available Color options
@@ -106,6 +107,7 @@
           credit_allowed = document.getElementById("credit_allowed").checked,
           cc_allowed = document.getElementById("cc_allowed").checked,
           elv_allowed = document.getElementById("elv_allowed").checked,
+          venmo_allowed = document.getElementById("venmo_allowed").checked,
           fundingicons = document.getElementById("fundingicons").checked,
           allowed_methods = [],
           disallowed_methods = [],
@@ -127,6 +129,12 @@
           allowed_methods.push(paypal.FUNDING.ELV);
       } else {
           disallowed_methods.push(paypal.FUNDING.ELV);
+      }
+      
+      if (venmo_allowed) {
+          allowed_methods.push(paypal.FUNDING.VENMO);
+      } else {
+          disallowed_methods.push(paypal.FUNDING.VENMO);
       }
       
       if (label == "credit") {
@@ -227,6 +235,6 @@
         <li>When using <b>Layout: Vertical</b>, cannot use <b>Size: Small</b> and does not use options of <b>Tagline</b> or <b>Label</b></li>
         <li><b>Funding Icons</b> only work with <b>Layout: Horizontal</b></li>
         <li>Selecting <b>Funding Icons</b> will override the <b>Tagline</b></li>
-        <li>Venmo button will not appear unless on mobile with a device that has a Venmo cookie.</li>
+        <li>Venmo button will not appear unless on mobile with a device that has a Venmo cookie and OneTouch is enabled</li>
     </ul>
 </body>
