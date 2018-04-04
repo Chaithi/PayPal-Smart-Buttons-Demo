@@ -10,4 +10,4 @@ Options obtained from:
 https://developer.paypal.com/docs/integration/direct/express-checkout/integration-jsv4/customize-button/ March 7, 2018.
 
 # Venmo
-Note, if testing Venmo buttons, ensure you are testing from a mobile device and that you have the Venmo app and have opted into using Venmo at merchants.
+For Sandbox testing, you can use your Developer Tools to test as a mobile device. For Live integrations, Venmo will only show on mobile devices where Venmo is installed and the user is opted into mobile payments.
