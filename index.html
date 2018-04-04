@@ -134,7 +134,8 @@
       if (venmo_allowed) {
           allowed_methods.push(paypal.FUNDING.VENMO);
       } else {
-          disallowed_methods.push(paypal.FUNDING.VENMO);
+          // disallowed_methods.push(paypal.FUNDING.VENMO); 
+          // This currently throws an error if added to disallowed.
       }
       
       if (label == "credit") {
@@ -235,6 +236,8 @@
         <li>When using <b>Layout: Vertical</b>, cannot use <b>Size: Small</b> and does not use options of <b>Tagline</b> or <b>Label</b></li>
         <li><b>Funding Icons</b> only work with <b>Layout: Horizontal</b></li>
         <li>Selecting <b>Funding Icons</b> will override the <b>Tagline</b></li>
-        <li>Venmo button will not appear unless on mobile with a device that has a Venmo cookie and OneTouch is enabled</li>
+        <li>On Live: Venmo button will not appear unless on mobile with a device that has a Venmo cookie and OneTouch is enabled</li>
+        <li>On Sandbox: Venmo will appear on mobile devices or in mobile testing mode in developer tools.</li>
+      <li>In <b>Layout: Horizontal</b> and <b>Max Buttons</b> is >2, if Venmo is allowed, it will show PayPal/Venmo. Otherwise, will show PayPal/PayPal Credit.</li>
     </ul>
 </body>
