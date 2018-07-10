@@ -4,6 +4,43 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+  <style>
+    /* desert scheme ported from vim to google prettify */
+    pre.prettyprint { display: block; background-color: #333 }
+    pre .nocode { background-color: none; color: #000 }
+    pre .str { color: #ffa0a0 } /* string  - pink */
+    pre .kwd { color: #f0e68c; font-weight: bold }
+    pre .com { color: #87ceeb } /* comment - skyblue */
+    pre .typ { color: #98fb98 } /* type    - lightgreen */
+    pre .lit { color: #cd5c5c } /* literal - darkred */
+    pre .pun { color: #fff }    /* punctuation */
+    pre .pln { color: #fff }    /* plaintext */
+    pre .tag { color: #f0e68c; font-weight: bold } /* html/xml tag    - lightyellow */
+    pre .atn { color: #bdb76b; font-weight: bold } /* attribute name  - khaki */
+    pre .atv { color: #ffa0a0 } /* attribute value - pink */
+    pre .dec { color: #98fb98 } /* decimal         - lightgreen */
+
+    /* Specify class=linenums on a pre to get line numbering */
+    ol.linenums { margin-top: 0; margin-bottom: 0; color: #AEAEAE } /* IE indents via margin-left */
+    li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8 { list-style-type: none }
+    /* Alternate shading for lines */
+    li.L1,li.L3,li.L5,li.L7,li.L9 { }
+
+    @media print {
+      pre.prettyprint { background-color: none }
+      pre .str, code .str { color: #060 }
+      pre .kwd, code .kwd { color: #006; font-weight: bold }
+      pre .com, code .com { color: #600; font-style: italic }
+      pre .typ, code .typ { color: #404; font-weight: bold }
+      pre .lit, code .lit { color: #044 }
+      pre .pun, code .pun { color: #440 }
+      pre .pln, code .pln { color: #000 }
+      pre .tag, code .tag { color: #006; font-weight: bold }
+      pre .atn, code .atn { color: #404 }
+      pre .atv, code .atv { color: #060 }
+    }
+  </style>
 </head>
 
 <body>
@@ -54,7 +91,75 @@
     <input type="checkbox" name="cc_allowed" id="cc_allowed" checked>Credit Cards
     <input type="checkbox" name="elv_allowed" id="elv_allowed" checked>ELV
     <input type="checkbox" name="venmo_allowed" id="venmo_allowed" checked>Venmo
-    
+    <br/><br />
+    <div id="paypal-button"></div>
+    <button type="button" onclick="renderButton()">Generate</button>
+    <pre class="prettyprint">
+        &lt;head&gt;
+          &lt;meta http-equiv="X-UA-Compatible" content="IE=edge" /&gt;
+          &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+          &lt;script src="https://www.paypalobjects.com/api/checkout.js"&gt;&lt;/script&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+            &lt;div id="paypal-button"&gt;&lt;/div&gt;
+        &lt;/body&gt;
+        &lt;script&gt;
+            var CLIENT_ID_SANDBOX = "enter your own";
+            paypal.Button.render({
+              env: 'sandbox', 
+              client: {
+                  sandbox: CLIENT_ID_SANDBOX
+              },
+
+              commit: true, // Show a 'Pay Now' button
+      
+      <div id="pretty"></div>
+      
+              payment: function(data, actions) {
+                return actions.payment.create({
+                    payment: {
+                        transactions: [
+                            {
+                                amount: {
+                                    total: '9.99',
+                                    currency: 'USD'
+                                }
+                            }
+                        ]
+                    }
+                });
+              },
+
+              onAuthorize: function(data, actions) {
+                return actions.payment.execute().then(function(payment) {
+                    alert("Payment complete!");
+
+                    });
+              },
+
+              onCancel: function(data, actions) {
+                /* 
+                 * Buyer cancelled the payment 
+                 */
+              },
+
+              onError: function(err) {
+                /* 
+                 * An error occurred during the transaction 
+                 */
+              }
+            }, '#paypal-button');
+        &lt;/script&gt;
+    </pre>
+    <script>
+        function addPretty(str) {
+            document.getElementById("pretty").innerHTML += PR.prettyPrintOne(str);
+        }
+        function addNewLine() {
+            document.getElementById("pretty").innerHTML += "\n";
+        }
+
+    </script>
   <script>
     // If Credit is selected, change available Color options
     function labelChanged() {
@@ -96,7 +201,7 @@
     document.getElementById("layout").addEventListener("change", layoutChanged);
       
     function renderButton() {
-        document.getElementById("paypal-button").innerHTML="";
+          document.getElementById("paypal-button").innerHTML="";
       var color = document.getElementById("color").value,
           size = document.getElementById("size").value,
           shape = document.getElementById("shape").value,
@@ -112,6 +217,7 @@
           allowed_methods = [],
           disallowed_methods = [],
           CLIENT_ID_SANDBOX = ""; // enter client ID here.
+    
       
       if (credit_allowed) {
           allowed_methods.push(paypal.FUNDING.CREDIT);
@@ -130,12 +236,11 @@
       } else {
           disallowed_methods.push(paypal.FUNDING.ELV);
       }
-      
+        
       if (venmo_allowed) {
           allowed_methods.push(paypal.FUNDING.VENMO);
       } else {
-          // disallowed_methods.push(paypal.FUNDING.VENMO); 
-          // This currently throws an error if added to disallowed.
+          disallowed_methods.push(paypal.FUNDING.VENMO);
       }
       
       if (label == "credit") {
@@ -160,6 +265,34 @@
           if (size == "small")
               size = "medium";
       }
+        // Add pretty code!
+        document.getElementById("pretty").innerHTML="";
+        addPretty("\t\tstyle: {");
+        addNewLine();
+        addPretty("\t\t\tcolor: " + color + ",");
+        addNewLine();
+        addPretty("\t\t\tsize: " + size + ",");
+        addNewLine();
+        addPretty("\t\t\tshape: " + shape + ",");
+        addNewLine();
+        addPretty("\t\t\ttagline: " + tagline + ",");
+        addNewLine();
+        addPretty("\t\t\tlabel: " + label + ",");
+        addNewLine();
+        addPretty("\t\t\tmaxbuttons: " + maxbuttons + ",");
+        addNewLine();
+        addPretty("\t\t\tfundingicons: " + fundingicons);
+        addNewLine();
+        addPretty("\t\t},");
+        addNewLine();
+        addNewLine();
+        addPretty("\t\tfunding: {");
+        addNewLine();
+        addPretty("\t\t\tallowed: " + allowed_methods + ",");
+        addNewLine();
+        addPretty("\t\t\tdisallowed: " + disallowed_methods);
+        addNewLine();
+        addPretty("\t\t},");
         
       paypal.Button.render({
           env: 'sandbox', 
@@ -183,7 +316,6 @@
           funding: {
               allowed: allowed_methods,
               disallowed: disallowed_methods
-              
           },
 
           payment: function(data, actions) {
@@ -221,12 +353,12 @@
           }
         }, '#paypal-button');
     }
+    
   </script>
     <br>
-<button type="button" onclick="renderButton()">Generate</button>
+
     <br>
     <br />
-    <div id="paypal-button"></div>
     <br>
     <h2>Limitations of PayPal Checkout</h2>
     <p>Certain parameters do not work with others:</p>
@@ -236,8 +368,6 @@
         <li>When using <b>Layout: Vertical</b>, cannot use <b>Size: Small</b> and does not use options of <b>Tagline</b> or <b>Label</b></li>
         <li><b>Funding Icons</b> only work with <b>Layout: Horizontal</b></li>
         <li>Selecting <b>Funding Icons</b> will override the <b>Tagline</b></li>
-        <li>On Live: Venmo button will not appear unless on mobile with a device that has a Venmo cookie and OneTouch is enabled</li>
-        <li>On Sandbox: Venmo will appear on mobile devices or in mobile testing mode in developer tools.</li>
-      <li>In <b>Layout: Horizontal</b> and <b>Max Buttons</b> is >2, if Venmo is allowed, it will show PayPal/Venmo. Otherwise, will show PayPal/PayPal Credit.</li>
+        <li>Venmo button will not appear unless on mobile with a device that has a Venmo cookie and OneTouch is enabled.</li>
     </ul>
 </body>
