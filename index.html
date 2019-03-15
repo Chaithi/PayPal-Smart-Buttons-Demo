@@ -4,43 +4,6 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://www.paypalobjects.com/api/checkout.js"></script>
-  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
-  <style>
-    /* desert scheme ported from vim to google prettify */
-    pre.prettyprint { display: block; background-color: #333 }
-    pre .nocode { background-color: none; color: #000 }
-    pre .str { color: #ffa0a0 } /* string  - pink */
-    pre .kwd { color: #f0e68c; font-weight: bold }
-    pre .com { color: #87ceeb } /* comment - skyblue */
-    pre .typ { color: #98fb98 } /* type    - lightgreen */
-    pre .lit { color: #cd5c5c } /* literal - darkred */
-    pre .pun { color: #fff }    /* punctuation */
-    pre .pln { color: #fff }    /* plaintext */
-    pre .tag { color: #f0e68c; font-weight: bold } /* html/xml tag    - lightyellow */
-    pre .atn { color: #bdb76b; font-weight: bold } /* attribute name  - khaki */
-    pre .atv { color: #ffa0a0 } /* attribute value - pink */
-    pre .dec { color: #98fb98 } /* decimal         - lightgreen */
-
-    /* Specify class=linenums on a pre to get line numbering */
-    ol.linenums { margin-top: 0; margin-bottom: 0; color: #AEAEAE } /* IE indents via margin-left */
-    li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8 { list-style-type: none }
-    /* Alternate shading for lines */
-    li.L1,li.L3,li.L5,li.L7,li.L9 { }
-
-    @media print {
-      pre.prettyprint { background-color: none }
-      pre .str, code .str { color: #060 }
-      pre .kwd, code .kwd { color: #006; font-weight: bold }
-      pre .com, code .com { color: #600; font-style: italic }
-      pre .typ, code .typ { color: #404; font-weight: bold }
-      pre .lit, code .lit { color: #044 }
-      pre .pun, code .pun { color: #440 }
-      pre .pln, code .pln { color: #000 }
-      pre .tag, code .tag { color: #006; font-weight: bold }
-      pre .atn, code .atn { color: #404 }
-      pre .atv, code .atv { color: #060 }
-    }
-  </style>
 </head>
 
 <body>
@@ -51,6 +14,7 @@
         <option value="blue">Blue</option>
         <option value="silver">Silver</option>
         <option value="black">Black</option>
+        <option value="white">White</option>
     </select>
     <label> Size: </label><select name="size" id="size">
         <option value="small">Small</option>
@@ -90,76 +54,34 @@
     <input type="checkbox" name="credit_allowed" id="credit_allowed" checked>PayPal Credit
     <input type="checkbox" name="cc_allowed" id="cc_allowed" checked>Credit Cards
     <input type="checkbox" name="elv_allowed" id="elv_allowed" checked>ELV
-    <input type="checkbox" name="venmo_allowed" id="venmo_allowed" checked>Venmo
+    <input type="checkbox" name="other_allowed" id="other_allowed" checked>Other APMs
+    <br />
+    <label>Locale: </label><select name="locale" id="locale">
+        <option value="en_US">US</option>
+        <option value="en_AU">AU</option>
+        <option value="de_DE">AT</option>
+        <option value="pt_BR">BR</option>
+        <option value="zh_CN">CN</option>
+        <option value="de_DE">DE</option>
+        <option value="es_ES">ES</option>
+        <option value="en_GB">GB</option>
+        <option value="fr_FR">FR</option>
+        <option value="it_IT">IT</option>
+        <option value="nl_NL">NL</option>
+        <option value="pt_PT">PT</option>
+        <option value="pl_PL">PL</option>
+        
+    </select>
+    <label>Currency: </label><select name="currency" id="currency">
+        <option value="USD">USD</option>
+        <option value="CAD">CAD</option>
+        <option value="EUR">EUR</option>
+        <option value="GBP">GBP</option>
+    </select>
     <br/><br />
     <div id="paypal-button"></div>
     <button type="button" onclick="renderButton()">Generate</button>
-    <pre class="prettyprint">
-        &lt;head&gt;
-          &lt;meta http-equiv="X-UA-Compatible" content="IE=edge" /&gt;
-          &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-          &lt;script src="https://www.paypalobjects.com/api/checkout.js"&gt;&lt;/script&gt;
-        &lt;/head&gt;
-        &lt;body&gt;
-            &lt;div id="paypal-button"&gt;&lt;/div&gt;
-        &lt;/body&gt;
-        &lt;script&gt;
-            var CLIENT_ID_SANDBOX = "enter your own";
-            paypal.Button.render({
-              env: 'sandbox', 
-              client: {
-                  sandbox: CLIENT_ID_SANDBOX
-              },
-
-              commit: true, // Show a 'Pay Now' button
-      
-      <div id="pretty"></div>
-      
-              payment: function(data, actions) {
-                return actions.payment.create({
-                    payment: {
-                        transactions: [
-                            {
-                                amount: {
-                                    total: '9.99',
-                                    currency: 'USD'
-                                }
-                            }
-                        ]
-                    }
-                });
-              },
-
-              onAuthorize: function(data, actions) {
-                return actions.payment.execute().then(function(payment) {
-                    alert("Payment complete!");
-
-                    });
-              },
-
-              onCancel: function(data, actions) {
-                /* 
-                 * Buyer cancelled the payment 
-                 */
-              },
-
-              onError: function(err) {
-                /* 
-                 * An error occurred during the transaction 
-                 */
-              }
-            }, '#paypal-button');
-        &lt;/script&gt;
-    </pre>
-    <script>
-        function addPretty(str) {
-            document.getElementById("pretty").innerHTML += PR.prettyPrintOne(str);
-        }
-        function addNewLine() {
-            document.getElementById("pretty").innerHTML += "\n";
-        }
-
-    </script>
+    
   <script>
     // If Credit is selected, change available Color options
     function labelChanged() {
@@ -168,7 +90,7 @@
         if (label == "credit") {
             colorDropdown.innerHTML = '<option value="black">Black</option><option value="darkblue">Dark Blue</option>';
         } else {
-            colorDropdown.innerHTML = '<option value="gold">Gold</option><option value="blue">Blue</option><option value="silver">Silver</option><option value="black">Black</option>';
+            colorDropdown.innerHTML = '<option value="gold">Gold</option><option value="blue">Blue</option><option value="silver">Silver</option><option value="black">Black</option><option value="white">White</option>';
         }
     }
     document.getElementById("label").addEventListener("change", labelChanged);
@@ -182,7 +104,6 @@
             labelBox = document.getElementById("label"),
             funding = document.getElementById("fundingicons");
         if (layout == "vertical") {
-            //labelBox.disabled = true;
             taglineBox.disabled = true;
             funding.checked = false;
             funding.disabled = true;
@@ -191,7 +112,6 @@
             sizeBox.innerHTML = '<option value="medium">Medium</option><option value="large">Large</option><option value="responsive">Responsive</option>';
             sizeBox.value = size;
         } else {
-            //labelBox.disabled = false;
             taglineBox.disabled = false;
             funding.disabled = false;
             sizeBox.innerHTML = '<option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option><option value="responsive">Responsive</option>';
@@ -209,48 +129,54 @@
           tagline = document.getElementById("tagline").value,
           layout = document.getElementById("layout").value,
           maxbuttons = document.getElementById("maxbuttons").value,
+          currency = document.getElementById("currency").value,
+          locale = document.getElementById("locale").value,
           credit_allowed = document.getElementById("credit_allowed").checked,
           cc_allowed = document.getElementById("cc_allowed").checked,
           elv_allowed = document.getElementById("elv_allowed").checked,
-          venmo_allowed = document.getElementById("venmo_allowed").checked,
+          other_allowed = document.getElementById("other_allowed").checked,
           fundingicons = document.getElementById("fundingicons").checked,
           allowed_methods = [],
           disallowed_methods = [],
-          allowed_display = [],
-          disallowed_display = [],
-          CLIENT_ID_SANDBOX = ""; // enter client ID here.
+          CLIENT_ID_SANDBOX = ""; // enter your own
+    
       
       if (credit_allowed) {
           allowed_methods.push(paypal.FUNDING.CREDIT);
-          allowed_display.push('paypal.FUNDING.CREDIT');
       } else {
           disallowed_methods.push(paypal.FUNDING.CREDIT);
-          disallowed_display.push('paypal.FUNDING.CREDIT');
       }
         
       if (cc_allowed) {
           allowed_methods.push(paypal.FUNDING.CARD);
-          allowed_display.push('paypal.FUNDING.CARD');
       } else {
           disallowed_methods.push(paypal.FUNDING.CARD);
-          disallowed_display.push('paypal.FUNDING.CARD');
       }
         
       if (elv_allowed) {
           allowed_methods.push(paypal.FUNDING.ELV);
-          allowed_display.push('paypal.FUNDING.ELV');
       } else {
           disallowed_methods.push(paypal.FUNDING.ELV);
-          disallowed_display.push('paypal.FUNDING.ELV');
       }
         
-      if (venmo_allowed) {
-          allowed_methods.push(paypal.FUNDING.VENMO);
-          allowed_display.push('paypal.FUNDING.VENMO');
+      if (other_allowed) {
+          allowed_methods.push(paypal.FUNDING.IDEAL);
+          allowed_methods.push(paypal.FUNDING.GIROPAY);
+          allowed_methods.push(paypal.FUNDING.EPS);
+          allowed_methods.push(paypal.FUNDING.SOFORT);
+          allowed_methods.push(paypal.FUNDING.MYBANK);
+          allowed_methods.push(paypal.FUNDING.P24);
+          allowed_methods.push(paypal.FUNDING.ZIMPLER);
       } else {
-          disallowed_methods.push(paypal.FUNDING.VENMO);
-          disallowed_display.push('paypal.FUNDING.VENMO');
-      }
+          disallowed_methods.push(paypal.FUNDING.IDEAL);
+          disallowed_methods.push(paypal.FUNDING.GIROPAY);
+          disallowed_methods.push(paypal.FUNDING.EPS);
+          disallowed_methods.push(paypal.FUNDING.SOFORT);
+          disallowed_methods.push(paypal.FUNDING.MYBANK);
+          disallowed_methods.push(paypal.FUNDING.P24);
+          disallowed_methods.push(paypal.FUNDING.ZIMPLER);
+      }          
+      
       
       if (label == "credit") {
           if (color != "black" && color != "darkblue") {
@@ -268,49 +194,24 @@
           //label = false;
           tagline = false;
           fundingicons = false;
-          
-          
+                    
           // Medium is smallest size for vertical layout
           if (size == "small")
               size = "medium";
       }
-        // Add pretty code!
-        document.getElementById("pretty").innerHTML="";
-        addPretty("\t\tstyle: {");
-        addNewLine();
-        addPretty("\t\t\tcolor: '" + color + "',");
-        addNewLine();
-        addPretty("\t\t\tsize: '" + size + "',");
-        addNewLine();
-        addPretty("\t\t\tshape: '" + shape + "',");
-        addNewLine();
-        addPretty("\t\t\ttagline: " + tagline + ",");
-        addNewLine();
-        addPretty("\t\t\tlabel: '" + label + "',");
-        addNewLine();
-        addPretty("\t\t\tmaxbuttons: " + maxbuttons + ",");
-        addNewLine();
-        addPretty("\t\t\tfundingicons: " + fundingicons);
-        addNewLine();
-        addPretty("\t\t},");
-        addNewLine();
-        addNewLine();
-        addPretty("\t\tfunding: {");
-        addNewLine();
-        addPretty("\t\t\tallowed: [" + allowed_display.toString() + "],");
-        addNewLine();
-        addPretty("\t\t\tdisallowed: [" + disallowed_display.toString() + "]");
-        addNewLine();
-        addPretty("\t\t},");
+    
+      if (other_allowed && currency !== "EUR") {
+          alert("Currently, only EUR currency is allowed for other APMs. Please set currency to EUR and try again.");
+          return;
+      }
         
       paypal.Button.render({
           env: 'sandbox', 
           client: {
-              sandbox: CLIENT_ID_SANDBOX
+              sandbox: CLIENT_ID_SANDBOX 
           },
-
+          locale: locale,
           commit: true, // Show a 'Pay Now' button
-
           style: {
             color: color,
             size: size,
@@ -330,11 +231,12 @@
           payment: function(data, actions) {
             return actions.payment.create({
                 payment: {
+                    intent: "sale",
                     transactions: [
                         {
                             amount: {
-                                total: '9.99',
-                                currency: 'USD'
+                                total: '149.99',
+                                currency: currency
                             }
                         }
                     ]
@@ -379,4 +281,27 @@
         <li>Selecting <b>Funding Icons</b> will override the <b>Tagline</b></li>
         <li>Venmo button will not appear unless on mobile with a device that has a Venmo cookie and OneTouch is enabled.</li>
     </ul>
+    <h2>Alternative Payment Methods</h2>
+    <h3>iDEAL, Sofort, Giropay, EPS, Mybank, P24, Zimpler</h3>
+    <p>To get these APMs to show:</p>
+    <ul>
+        <li>commit: true</li>
+        <li>currency: EUR</li>
+        <li>layout: vertical</li>
+        <li>maxbuttons: >= 2 (4 recommended)</li>
+        <li>The APM must be added to the <i>funding -> allowed</i> array</li>
+    </ul>
+    <p>Buyer must be located in the following locations (or for testing, Locale must be set to:</p>
+    <ul>
+        <li>paypal.FUNDING.IDEAL :: NL</li>
+        <li>paypal.FUNDING.GIROPAY :: DE</li>
+        <li>paypal.FUNDING.EPS :: AT</li>
+        <li>paypal.FUNDING.SOFORT :: NL, DE, AT, BE, IT, ES</li>
+        <li>paypal.FUNDING.MYBANK :: IT</li>
+        <li>paypal.FUNDING.P24 :: PL</li>
+        <li>paypal.FUNDING.ZIMPLER :: FI</li>
+        <li>paypal.FUNDING.ELV :: DE, AT</li>
+    </ul>
+    <p>Additionally, for these APMs, since commit=true, you cannot change the amounts of the transactions when you execute the payment.</p>
+    <h3>Want the full code for this generator? Visit my <a href="https://github.com/Chaithi/PayPal-Smart-Buttons-Demo" target="_blank">GitHub</a>.</h3>
 </body>
